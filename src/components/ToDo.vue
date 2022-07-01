@@ -3,9 +3,9 @@
         <div v-for="(toDo, index) in target" :key="index" class="horizontalFlex">
             <div>
                 <label for="">일정 날짜</label>
-                <input type="date" :value="toDo.date">
+                <input type="date" :value="toDo.date" disabled>
                 <label for="">일정 제목</label>
-                <input type="text" :value="toDo.title">
+                <input type="text" :value="toDo.title" disabled>
             </div>
             <div>
                 <button class="upd" @click="$emit('togglePop',{type:'toDo', target:target, index:index, mode:1})">수정</button>

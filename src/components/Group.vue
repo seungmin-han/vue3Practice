@@ -4,11 +4,11 @@
             <div class="horizontalFlex">
                 <div>
                     <label for="">그룹 이름</label>
-                    <input type="text" :value="group.name">
+                    <input type="text" :value="group.name" disabled>
                 </div>
                 <div class="buttonWrap">
                     <button @click="$emit('togglePop',{type:'subGroup', target:group, index:index, mode:0})">서브 그룹 추가</button>
-                    <button @click="$emit('togglePop',{type:'toDo', target:group, index:index, mode:0})">일정 추가</button>
+                    <button v-if="!isLoot" @click="$emit('togglePop',{type:'toDo', target:group, index:index, mode:0})">일정 추가</button>
                     <button class="upd" @click="$emit('togglePop',{type:'group', target:childList, index:index, mode:1})">수정</button>
                     <button class="del" @click="$emit('togglePop',{type:'group', target:childList, index:index, mode:2})">삭제</button>
                 </div>
@@ -22,6 +22,7 @@
                 class="groupWrap"
                 :groupList="group" 
                 :childList="group.group"
+                :isLoot="isLoot"
                 @togglePop="$emit('togglePop',$event)">
             </Group>
             
@@ -39,7 +40,7 @@ export default {
         ToDo
     },
 
-    props: ["groupList","childList","index"],
+    props: ["groupList","childList","isLoot"],
     emits: ["togglePop"],
     setup(props, { emit }) {
         const showTarget = (target) => {

@@ -3,13 +3,18 @@
         :modals="modals" 
         :toDo="toDo" 
         :group="group" 
+        :loot="loot"
+        :lootInfo="lootInfo"
         @togglePop="togglePop"
         @createGroup="createGroup" 
         @updateGroup="updateGroup" 
         @deleteGroup="deleteGroup" 
         @createToDo="createToDo"
         @updateToDo="updateToDo"
-        @deleteToDo="deleteToDo">
+        @deleteToDo="deleteToDo"
+        @createLoot="createLoot"
+        @updateLoot="updateLoot"
+        @deleteLoot="deleteLoot">
 
     </Modal>
     <div class="wrap">
@@ -17,7 +22,7 @@
             <h2>연합</h2>
             <div class="unionWrap horizontalFlex">
                 <div>
-                <label for="">연합 이름</label>
+                <label for="">연합 이름 </label>
                 <input 
                     type="text" 
                     placeholder="연합 이름" 
@@ -26,7 +31,7 @@
                 >
                 </div>
                 <div>
-                    <label for="">연합 주소</label>
+                    <label for="">연합 주소 </label>
                     <input 
                         type="text" 
                         placeholder="연합 주소" 
@@ -82,7 +87,6 @@
             <Group 
                 :groupList="groupList"
                 :childList="groupList"
-                :index="index"
                 @togglePop="togglePop">
             </Group>
             <div class="horizontalFlex">
@@ -93,10 +97,17 @@
                 @togglePop="togglePop">
             </ToDo>
             <div class="horizontalFlex">
-                <span>약탈</span><button @click="togglePop({type:'looting'})">약탈 추가</button>
+                <span>약탈</span><button @click="togglePop({type:'loot'})">약탈 추가</button>
             </div>
-            
+            <Loot
+                :lootList="lootList"
+                :childList="lootList"
+                @togglePop="togglePop">
+            </Loot>
         </section>
+        <div class="horizontalFlex">
+            <button @click="saveData">생성하기</button>
+        </div>
     </div>
 </template>
 
@@ -104,31 +115,34 @@
 import Modal from './Modals.vue';
 import Group from './Group.vue';
 import ToDo from './ToDo.vue';
+import Loot from './Loot.vue';
 import { reactive, ref } from "vue";
 export default {
     components : {
-        Modal,
-        Group,
-        ToDo
+        Modal
+        , Group
+        , ToDo
+        , Loot
     },
 
     setup() {
-        const index = ref(0);
 
-        const union = ref({
+        let unions = new Array();
+
+        const union = reactive({
             name:""
             , address: ""
         });
         
         const memberList = reactive({
-            leader:"",
-            commander: [],
-            endUser: []
+            leader:""
+            , commander: []
+            , endUser: []
         });
 
         const member = ref({
-            name:"",
-            level:""
+            name:""
+            , level:""
         });
 
         const groupList = reactive(
@@ -146,8 +160,24 @@ export default {
         );
         
         const toDo = reactive({
-            date:"",
-            title:""
+            date:""
+            , title:""
+        });
+
+        const lootList = reactive(
+            []
+        );
+
+        const loot = reactive({
+            grade: -1
+            , classroom: -1
+            , loot:[]
+            , group:[]
+        });
+
+        const lootInfo = reactive({
+            grade: [1,2,3,4,5,6]
+            , classroom: [1,2,3,4,5,6,7,8,9]
         });
 
         const modals = reactive({
@@ -156,24 +186,21 @@ export default {
             , group: false
             , toDo: false
             , subGroup: false
+            , loot: false
             , target: []
-            , index
+            , index: 0
             , text: ""
         });
         
         const createMember = (level, name) => {
-            console.log(level,name);
-
             if(level.trim()=="") {
                 alert("계급을 선택해주세요.");
                 return;
             }
-
             if(name.trim()=="") {
                 alert("이름을 입력해주세요.");
                 return;
             }
-
             if(level.trim()=="leader") 
             {
                 if(memberList.leader.length < 1)    
@@ -191,11 +218,8 @@ export default {
         }
 
         const deleteMember = (level, index) => {
-            console.log(level, index);
-
             if(level.trim()=="leader") 
             {
-                console.log("leader");
                 memberList.leader = "";
             } 
             else if(level.trim()=="commander") 
@@ -216,14 +240,12 @@ export default {
             modals.index = index;
             modals.mode = mode;
             modals.text = type;
-
-            console.log(target, "index:", modals.index);
-
+            
             if(type=="group") 
             {
                 modals.group = !modals.group;
-                if(modals.mode!=0)
-                    group.name = target[modals.index].name;
+                group.name = (modals.mode!=0) ? target[modals.index].name : "";
+                   
             }
             else if(type=="subGroup")
             {
@@ -232,12 +254,16 @@ export default {
             }
             else if(type=="toDo")
             {
-                modals.toDo = !modals.toDo;
-                if(modals.mode!=0) 
-                {
-                    toDo.title = target[modals.index].title;
-                    toDo.date = target[modals.index].date;
-                }
+                modals.toDo = !modals.toDo;    
+                toDo.title = (modals.mode!=0) ? target[modals.index].title : "";
+                toDo.date = (modals.mode!=0) ? target[modals.index].date : "";   
+            }
+            else if(type=="loot")
+            {
+                modals.loot = !modals.loot;
+                loot.grade = (modals.mode!=0) ? target[modals.index].grade : "";
+                loot.classroom = (modals.mode!=0) ? target[modals.index].classroom : "";
+
             }
         }
 
@@ -250,8 +276,7 @@ export default {
             {
                 modals.target.group.push({...group});
             }
-            console.log("createGroup-target:", modals.target);
-            console.log("createGroup-groupList:", groupList);
+
             group.name = "";
             group.toDo = [];
             group.group = [];
@@ -311,25 +336,85 @@ export default {
             togglePop({type:'toDo'});
         }
 
+        const createLoot = () => {
+            if(modals.target.length == 0)
+            {
+                lootList.push({...loot});
+            }
+            else
+            {
+                modals.target.loot.push({...loot});
+            }
+
+            loot.grade = -1;
+            loot.classroom = -1;
+            loot.group = [];
+            loot.loot = [];
+            
+
+            togglePop({type:"loot"});
+        }
+
+        const updateLoot = () => {
+            modals.target[modals.index].grade=loot.grade;
+            modals.target[modals.index].classroom=loot.classroom;
+
+            loot.grade = "";
+            loot.classroom = "";
+            togglePop({type:'loot'});
+        }
+
+        const deleteLoot = () => {
+            modals.target.splice(modals.index, 1);
+
+            loot.grade = "";
+            loot.classroom = "";
+            togglePop({type:'loot'});
+        }
+
+        const saveData = () => {
+            let unions = [];
+
+            const data = {
+                "union": union
+                , "memberList": memberList
+                , "groupList": groupList
+                , "toDoList": toDoList
+                , "lootList": lootList
+                , "lootInfo": lootInfo
+            }
+            if(localStorage.getItem("unions"))
+                unions = JSON.parse(localStorage.getItem("unions"));
+            unions.push(data);
+            localStorage.setItem("unions", JSON.stringify(unions));
+        }
+
         return {
-            index
-            , union
-            , memberList
-            , member
-            , groupList
-            , group
-            , toDoList
-            , toDo
+            union
             , modals
             , togglePop
+            , memberList
+            , member
             , createMember
             , deleteMember
+            , groupList
+            , group
             , createGroup
             , updateGroup
             , deleteGroup
+            , toDoList
+            , toDo
             , createToDo
             , updateToDo
             , deleteToDo
+            , lootList
+            , loot
+            , lootInfo
+            , createLoot
+            , updateLoot
+            , deleteLoot
+            , unions
+            , saveData
         }
     }
 }
@@ -456,6 +541,11 @@ export default {
         .groupWrap > .groupWrap {
             padding-left: 30px;
         }
+
+        .lootWrap > .lootWrap {
+            padding-left: 30px;
+        }
+
     }
 
     /* 일정 영역 끝 */
