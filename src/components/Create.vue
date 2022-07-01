@@ -1,4 +1,17 @@
 <template>
+    <Modal 
+        :modals="modals" 
+        :toDo="toDo" 
+        :group="group" 
+        @togglePop="togglePop"
+        @createGroup="createGroup" 
+        @updateGroup="updateGroup" 
+        @deleteGroup="deleteGroup" 
+        @createToDo="createToDo"
+        @updateToDo="updateToDo"
+        @deleteToDo="deleteToDo">
+
+    </Modal>
     <div class="wrap">
         <section id="unionInfo" class="verticalFlex">
             <h2>연합</h2>
@@ -32,48 +45,76 @@
                     </option>
                 </select>
                 <input id="memberName" type="text" v-model="member.name">
-                <button @click="addMember(member.level,member.name)">추가</button>
+                <button @click="createMember(member.level,member.name)">추가</button>
             </div>
             <div class="memberWrap horizontalFlex">
                 <div>
                     <h4>대장</h4>
-                    {{memberList.leader}}
-                    <button v-if="memberList.leader" @click="removeMember('leader', 0)">취소</button>
+                    <div class="horizontalFlex" v-if="memberList.leader">
+                        <span>{{memberList.leader}}</span>
+                        <button class="del" @click="deleteMember('leader', 0)">취소</button>
+                    </div>
                 </div>
                 <div>
                     <h4>부대장</h4>
                     <ul>
-                        <li v-for="(member, index) in memberList.commander" :key="index">
-                            {{member}}
-                            <button @click="removeMember('commander', index)">취소</button>
+                        <li v-for="(member, index) in memberList.commander" :key="index" class="horizontalFlex">
+                            <span>{{member}}</span>
+                            <button class="del" @click="deleteMember('commander', index)">취소</button>
                         </li>
                     </ul>
                 </div>
                 <div>
                     <h4>말단</h4>
                     <ul>
-                        <li v-for="(member, index) in memberList.endUser" :key="index">
-                            {{member}}
-                            <button @click="removeMember('endUser', index)">취소</button>
+                        <li v-for="(member, index) in memberList.endUser" :key="index" class="horizontalFlex">
+                            <span>{{member}}</span>
+                            <button class="del" @click="deleteMember('endUser', index)">취소</button>
                         </li>
-
                     </ul>
                 </div>
             </div>
         </section>
-        <Content></Content>
+        <section class="verticalFlex contentWrap">
+            <div class="horizontalFlex">
+                <span>그룹</span><button @click="togglePop({type:'group'})">그룹 추가</button>
+            </div>
+            <Group 
+                :groupList="groupList"
+                :childList="groupList"
+                :index="index"
+                @togglePop="togglePop">
+            </Group>
+            <div class="horizontalFlex">
+                <span>일정</span><button @click="togglePop({type:'toDo'})">일정 추가</button>
+            </div>
+            <ToDo 
+                :target="toDoList"
+                @togglePop="togglePop">
+            </ToDo>
+            <div class="horizontalFlex">
+                <span>약탈</span><button @click="togglePop({type:'looting'})">약탈 추가</button>
+            </div>
+            
+        </section>
     </div>
 </template>
 
 <script>
-import Content from './Content.vue';
+import Modal from './Modals.vue';
+import Group from './Group.vue';
+import ToDo from './ToDo.vue';
 import { reactive, ref } from "vue";
 export default {
     components : {
-        Content
+        Modal,
+        Group,
+        ToDo
     },
 
     setup() {
+        const index = ref(0);
+
         const union = ref({
             name:""
             , address: ""
@@ -90,8 +131,37 @@ export default {
             level:""
         });
 
+        const groupList = reactive(
+            []
+        );
         
-        const addMember = (level, name) => {
+        const group = reactive({
+            name:""
+            , toDo: []
+            , group: []
+        });
+
+        const toDoList = reactive(
+            []
+        );
+        
+        const toDo = reactive({
+            date:"",
+            title:""
+        });
+
+        const modals = reactive({
+            isOpen: false
+            , mode: 0 // 0: create, 1: update, 2:delete
+            , group: false
+            , toDo: false
+            , subGroup: false
+            , target: []
+            , index
+            , text: ""
+        });
+        
+        const createMember = (level, name) => {
             console.log(level,name);
 
             if(level.trim()=="") {
@@ -120,7 +190,7 @@ export default {
             }
         }
 
-        const removeMember = (level, index) => {
+        const deleteMember = (level, index) => {
             console.log(level, index);
 
             if(level.trim()=="leader") 
@@ -139,29 +209,173 @@ export default {
             
         }
 
+        const togglePop = ({type, target = [], index, mode=0}) => {
+            
+            modals.isOpen = !modals.isOpen;
+            modals.target = target;
+            modals.index = index;
+            modals.mode = mode;
+            modals.text = type;
+
+            console.log(target, "index:", modals.index);
+
+            if(type=="group") 
+            {
+                modals.group = !modals.group;
+                if(modals.mode!=0)
+                    group.name = target[modals.index].name;
+            }
+            else if(type=="subGroup")
+            {
+                modals.group = !modals.group;
+                modals.subGroup = !modals.subGroup;
+            }
+            else if(type=="toDo")
+            {
+                modals.toDo = !modals.toDo;
+                if(modals.mode!=0) 
+                {
+                    toDo.title = target[modals.index].title;
+                    toDo.date = target[modals.index].date;
+                }
+            }
+        }
+
+        const createGroup = () => {
+            if(modals.target.length == 0)
+            {
+                groupList.push({...group});
+            }
+            else
+            {
+                modals.target.group.push({...group});
+            }
+            console.log("createGroup-target:", modals.target);
+            console.log("createGroup-groupList:", groupList);
+            group.name = "";
+            group.toDo = [];
+            group.group = [];
+
+            togglePop({type:"group"});
+        }
+
+        const updateGroup = () => {
+            modals.target[modals.index].name=group.name;
+
+            group.name = "";
+            group.toDo = [];
+            group.group = [];
+
+            togglePop({type:"group"});
+        }
+
+        const deleteGroup = () => {
+            modals.target.splice(modals.index, 1);
+
+            group.name = "";
+            group.toDo = [];
+            group.group = [];
+
+            togglePop({type:"group"});
+        }
+
+        const createToDo = () => {
+            if(modals.target.length == 0) 
+            {
+                toDoList.push({...toDo});
+            }
+            else
+            {
+                modals.target.toDo.push({...toDo});
+            }
+                
+            toDo.title = "";
+            toDo.date = "";
+            togglePop({type:'toDo'});
+        }
+
+        const updateToDo = () => {
+            modals.target[modals.index].date=toDo.date;
+            modals.target[modals.index].title=toDo.title;
+
+            toDo.title = "";
+            toDo.date = "";
+            togglePop({type:'toDo'});
+        }
+
+        const deleteToDo = () => {
+            modals.target.splice(modals.index, 1);
+
+            toDo.title = "";
+            toDo.date = "";
+            togglePop({type:'toDo'});
+        }
+
         return {
-            union
+            index
+            , union
             , memberList
             , member
-            , addMember
-            , removeMember
+            , groupList
+            , group
+            , toDoList
+            , toDo
+            , modals
+            , togglePop
+            , createMember
+            , deleteMember
+            , createGroup
+            , updateGroup
+            , deleteGroup
+            , createToDo
+            , updateToDo
+            , deleteToDo
         }
     }
-
 }
 </script>
 
 <style lang="scss">
-    .wrap {
-        width: 1200px;
-        margin: 0 auto;
+    @mixin memberItem {
+        padding: 5px 0;
+        border-bottom: 2px solid #ccc;
+    }
+
+    /* 공통 스타일 시작 */
+
+    input, select {
+        font-size: 18px;
+        line-height: 18px;
+    }
+
+    button {
+        margin: 0 5px;
+        padding: 5px 15px;
+        color: #fff;
+        font-weight: bold;
+        line-height: 18px;
+        background-color: dodgerblue;
+        border: 1px solid #888;
+        border-radius: 5px;
+    }
+
+    .del {
+        background-color: brown;
+    }
+
+    .upd {
+        background-color:mediumseagreen
+    }
+    
+    .gray{
+        background-color: gray;
     }
 
     .verticalFlex {
-            display:flex;
-            flex-direction: column;
-            justify-content: flex-start;
-        };
+        display:flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    };
 
     .horizontalFlex {
         display:flex;
@@ -172,6 +386,79 @@ export default {
         }
     }
 
-    
+    .wrap {
+        width: 1200px;
+        margin: 0 auto;
+    }
+
+    section {
+        margin: 30px 0;
+        padding: 40px 0;
+        border: 1px solid #ccc;
+    }
+
+    /* 공통 스타일 끝 */
+
+    /* 연합 정보 영역 시작 */
+
+    .unionWrap {
+        > div {
+            flex-grow: 1;
+        }
+    }
+
+    /* 연합 정보 영역 끝 */
+
+    /* 멤버 영역 시작 */
+
+    .memberWrap {
+        max-height: 200px;
+        h4 {
+            padding: 10px 0;
+            border-bottom: 3px solid #666;
+        }
+        > div:first-child > div {
+            @include memberItem();
+        }
+        > div {
+            max-height: inherit;
+            flex-grow: 1;
+            > ul {
+                max-height: 100px;
+                overflow-y: scroll;
+                > li {
+                    @include memberItem();
+                } 
+            }
+        }
+        .horizontalFlex {
+            justify-content: space-between;
+        }
+    }
+
+    /* 멤버 영역 끝 */
+
+    /* 일정 영역 시작 */
+
+    .contentWrap {
+        padding: 20px;
+        > div {
+            justify-content: space-between;
+            padding: 10px 0;
+            > span {
+                font-size: 24px;
+                font-weight: bold;
+            }
+        }
+        > div.horizontalFlex {
+            border-bottom: 2px solid #aaa;
+        }
+        .groupWrap > .groupWrap {
+            padding-left: 30px;
+        }
+    }
+
+    /* 일정 영역 끝 */
+
 
 </style>
