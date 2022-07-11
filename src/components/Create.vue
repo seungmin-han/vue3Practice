@@ -1,23 +1,11 @@
 <template>
-    <Modal 
-        :modals="modals" 
-        :toDo="toDo" 
-        :group="group" 
-        :loot="loot"
-        :lootInfo="lootInfo"
-        @togglePop="togglePop"
-        @createGroup="createGroup" 
-        @updateGroup="updateGroup" 
-        @deleteGroup="deleteGroup" 
-        @createToDo="createToDo"
-        @updateToDo="updateToDo"
-        @deleteToDo="deleteToDo"
-        @createLoot="createLoot"
-        @updateLoot="updateLoot"
-        @deleteLoot="deleteLoot">
+    <!-- 연합 생성 페이지 컴포넌트 -->
 
-    </Modal>
+    <!-- 모달 팝업(연합 생성에서 emit을 통한 로직 처리) -->
+    <Modal></Modal>
+
     <div class="wrap">
+        <!-- 연합 기본 정보 입력 폼 -->
         <section id="unionInfo" class="verticalFlex">
             <h2>연합</h2>
             <div class="unionWrap horizontalFlex">
@@ -26,7 +14,7 @@
                 <input 
                     type="text" 
                     placeholder="연합 이름" 
-                    v-model="union.name"
+                    v-model="unions.union.name"
                     @keyup.enter="enter(this, 1)"
                 >
                 </div>
@@ -35,22 +23,23 @@
                     <input 
                         type="text" 
                         placeholder="연합 주소" 
-                        v-model="union.address"
+                        v-model="unions.union.address"
                     >
                 </div>
             </div>
         </section>
+        <!-- 연합 멤버 입력 폼 -->
         <section id="memberInfo" class="verticalFlex">
             <h2>멤버</h2>
             <div>
                 <select name="" id="memberLevel" v-model="member.level">
                     <option value="">계급 선택</option>
-                    <option v-for="(value, key) in memberList" :key="value" v-bind:value="key">
+                    <option v-for="(value, key) in memberList" :key="key" v-bind:value="key">
                         {{key}}
                     </option>
                 </select>
                 <input id="memberName" type="text" v-model="member.name">
-                <button @click="createMember(member.level,member.name)">추가</button>
+                <button @click="createMember">추가</button>
             </div>
             <div class="memberWrap horizontalFlex">
                 <div>
@@ -82,27 +71,24 @@
         </section>
         <section class="verticalFlex contentWrap">
             <div class="horizontalFlex">
-                <span>그룹</span><button @click="togglePop({type:'group'})">그룹 추가</button>
+                <span>그룹</span><button @click="togglePop('group')">그룹 추가</button>
             </div>
             <Group 
-                :groupList="groupList"
-                :childList="groupList"
-                @togglePop="togglePop">
+                :groupList="unions.groupList"
+                :childList="unions.groupList">
             </Group>
             <div class="horizontalFlex">
-                <span>일정</span><button @click="togglePop({type:'toDo'})">일정 추가</button>
+                <span>일정</span><button @click="togglePop('toDo')">일정 추가</button>
             </div>
             <ToDo 
-                :target="toDoList"
-                @togglePop="togglePop">
+                :target="unions.toDoList">
             </ToDo>
             <div class="horizontalFlex">
-                <span>약탈</span><button @click="togglePop({type:'loot'})">약탈 추가</button>
+                <span>약탈</span><button @click="togglePop('loot')">약탈 추가</button>
             </div>
             <Loot
-                :lootList="lootList"
-                :childList="lootList"
-                @togglePop="togglePop">
+                :lootList="unions.lootList"
+                :childList="unions.lootList">
             </Loot>
         </section>
         <div class="horizontalFlex">
@@ -116,7 +102,8 @@ import Modal from './Modals.vue';
 import Group from './Group.vue';
 import ToDo from './ToDo.vue';
 import Loot from './Loot.vue';
-import { reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
+import { useListStore } from "../stores/list";
 export default {
     components : {
         Modal
@@ -127,46 +114,28 @@ export default {
 
     setup() {
 
-        let unions = new Array();
+        const unions = useListStore();
 
         const union = reactive({
-            name:""
-            , address: ""
-        });
-        
-        const memberList = reactive({
-            leader:""
-            , commander: []
-            , endUser: []
+            name: "",
+            address: ""
         });
 
-        const member = ref({
+        const member = reactive({
             name:""
             , level:""
         });
 
-        const groupList = reactive(
-            []
-        );
-        
         const group = reactive({
             name:""
             , toDo: []
             , group: []
         });
 
-        const toDoList = reactive(
-            []
-        );
-        
         const toDo = reactive({
             date:""
             , title:""
         });
-
-        const lootList = reactive(
-            []
-        );
 
         const loot = reactive({
             grade: -1
@@ -175,246 +144,38 @@ export default {
             , group:[]
         });
 
-        const lootInfo = reactive({
-            grade: [1,2,3,4,5,6]
-            , classroom: [1,2,3,4,5,6,7,8,9]
-        });
-
-        const modals = reactive({
-            isOpen: false
-            , mode: 0 // 0: create, 1: update, 2:delete
-            , group: false
-            , toDo: false
-            , subGroup: false
-            , loot: false
-            , target: []
-            , index: 0
-            , text: ""
-        });
-        
-        const createMember = (level, name) => {
-            if(level.trim()=="") {
-                alert("계급을 선택해주세요.");
-                return;
-            }
-            if(name.trim()=="") {
-                alert("이름을 입력해주세요.");
-                return;
-            }
-            if(level.trim()=="leader") 
-            {
-                if(memberList.leader.length < 1)    
-                    memberList.leader = name;
-            } 
-            else if(level.trim()=="commander") 
-            {
-                if(memberList.commander.length < 7)
-                    memberList.commander.push(name);
-            }
-            else 
-            {
-                memberList.endUser.push(name);
-            }
+        const createMember = () => {
+            unions.createMember(member.level, member.name);
         }
 
         const deleteMember = (level, index) => {
-            if(level.trim()=="leader") 
-            {
-                memberList.leader = "";
-            } 
-            else if(level.trim()=="commander") 
-            {
-                memberList.commander.splice(index, 1);
-            }
-            else 
-            {
-                memberList.endUser.splice(index, 1);
-            }
-            
+            unions.deleteMember(level, index);
         }
 
-        const togglePop = ({type, target = [], index, mode=0}) => {
-            
-            modals.isOpen = !modals.isOpen;
-            modals.target = target;
-            modals.index = index;
-            modals.mode = mode;
-            modals.text = type;
-            
-            if(type=="group") 
-            {
-                modals.group = !modals.group;
-                group.name = (modals.mode!=0) ? target[modals.index].name : "";
-                   
-            }
-            else if(type=="subGroup")
-            {
-                modals.group = !modals.group;
-                modals.subGroup = !modals.subGroup;
-            }
-            else if(type=="toDo")
-            {
-                modals.toDo = !modals.toDo;    
-                toDo.title = (modals.mode!=0) ? target[modals.index].title : "";
-                toDo.date = (modals.mode!=0) ? target[modals.index].date : "";   
-            }
-            else if(type=="loot")
-            {
-                modals.loot = !modals.loot;
-                loot.grade = (modals.mode!=0) ? target[modals.index].grade : "";
-                loot.classroom = (modals.mode!=0) ? target[modals.index].classroom : "";
+        const togglePop = (type, target = [], index, mode=0) => {
+            unions.setGroup(group);
+            unions.setToDo(toDo);
+            unions.setLoot(loot);
 
-            }
-        }
-
-        const createGroup = () => {
-            if(modals.target.length == 0)
-            {
-                groupList.push({...group});
-            }
-            else
-            {
-                modals.target.group.push({...group});
-            }
-
-            group.name = "";
-            group.toDo = [];
-            group.group = [];
-
-            togglePop({type:"group"});
-        }
-
-        const updateGroup = () => {
-            modals.target[modals.index].name=group.name;
-
-            group.name = "";
-            group.toDo = [];
-            group.group = [];
-
-            togglePop({type:"group"});
-        }
-
-        const deleteGroup = () => {
-            modals.target.splice(modals.index, 1);
-
-            group.name = "";
-            group.toDo = [];
-            group.group = [];
-
-            togglePop({type:"group"});
-        }
-
-        const createToDo = () => {
-            if(modals.target.length == 0) 
-            {
-                toDoList.push({...toDo});
-            }
-            else
-            {
-                modals.target.toDo.push({...toDo});
-            }
-                
-            toDo.title = "";
-            toDo.date = "";
-            togglePop({type:'toDo'});
-        }
-
-        const updateToDo = () => {
-            modals.target[modals.index].date=toDo.date;
-            modals.target[modals.index].title=toDo.title;
-
-            toDo.title = "";
-            toDo.date = "";
-            togglePop({type:'toDo'});
-        }
-
-        const deleteToDo = () => {
-            modals.target.splice(modals.index, 1);
-
-            toDo.title = "";
-            toDo.date = "";
-            togglePop({type:'toDo'});
-        }
-
-        const createLoot = () => {
-            if(modals.target.length == 0)
-            {
-                lootList.push({...loot});
-            }
-            else
-            {
-                modals.target.loot.push({...loot});
-            }
-
-            loot.grade = -1;
-            loot.classroom = -1;
-            loot.group = [];
-            loot.loot = [];
-            
-
-            togglePop({type:"loot"});
-        }
-
-        const updateLoot = () => {
-            modals.target[modals.index].grade=loot.grade;
-            modals.target[modals.index].classroom=loot.classroom;
-
-            loot.grade = "";
-            loot.classroom = "";
-            togglePop({type:'loot'});
-        }
-
-        const deleteLoot = () => {
-            modals.target.splice(modals.index, 1);
-
-            loot.grade = "";
-            loot.classroom = "";
-            togglePop({type:'loot'});
+            unions.togglePop(type, target, index, mode);
         }
 
         const saveData = () => {
-            let unions = [];
-
-            const data = {
-                "union": union
-                , "memberList": memberList
-                , "groupList": groupList
-                , "toDoList": toDoList
-                , "lootList": lootList
-                , "lootInfo": lootInfo
-            }
-            if(localStorage.getItem("unions"))
-                unions = JSON.parse(localStorage.getItem("unions"));
-            unions.push(data);
-            localStorage.setItem("unions", JSON.stringify(unions));
+            unions.saveData();
         }
 
         return {
             union
-            , modals
-            , togglePop
-            , memberList
             , member
+            , group
+            , toDo
+            , loot
+            , unions
             , createMember
             , deleteMember
-            , groupList
-            , group
-            , createGroup
-            , updateGroup
-            , deleteGroup
-            , toDoList
-            , toDo
-            , createToDo
-            , updateToDo
-            , deleteToDo
-            , lootList
-            , loot
-            , lootInfo
-            , createLoot
-            , updateLoot
-            , deleteLoot
-            , unions
+            , togglePop
             , saveData
+            , memberList: computed(()=> unions.memberList)
         }
     }
 }
