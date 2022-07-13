@@ -6,69 +6,9 @@
 
     <div class="wrap">
         <!-- 연합 기본 정보 입력 폼 -->
-        <section id="unionInfo" class="verticalFlex">
-            <h2>연합</h2>
-            <div class="unionWrap horizontalFlex">
-                <div>
-                <label for="">연합 이름 </label>
-                <input 
-                    type="text" 
-                    placeholder="연합 이름" 
-                    v-model="unions.union.name"
-                    @keyup.enter="enter(this, 1)"
-                >
-                </div>
-                <div>
-                    <label for="">연합 주소 </label>
-                    <input 
-                        type="text" 
-                        placeholder="연합 주소" 
-                        v-model="unions.union.address"
-                    >
-                </div>
-            </div>
-        </section>
+        <Union></Union>
         <!-- 연합 멤버 입력 폼 -->
-        <section id="memberInfo" class="verticalFlex">
-            <h2>멤버</h2>
-            <div>
-                <select name="" id="memberLevel" v-model="member.level">
-                    <option value="">계급 선택</option>
-                    <option v-for="(value, key) in memberList" :key="key" v-bind:value="key">
-                        {{key}}
-                    </option>
-                </select>
-                <input id="memberName" type="text" v-model="member.name">
-                <button @click="createMember">추가</button>
-            </div>
-            <div class="memberWrap horizontalFlex">
-                <div>
-                    <h4>대장</h4>
-                    <div class="horizontalFlex" v-if="memberList.leader">
-                        <span>{{memberList.leader}}</span>
-                        <button class="del" @click="deleteMember('leader', 0)">취소</button>
-                    </div>
-                </div>
-                <div>
-                    <h4>부대장</h4>
-                    <ul>
-                        <li v-for="(member, index) in memberList.commander" :key="index" class="horizontalFlex">
-                            <span>{{member}}</span>
-                            <button class="del" @click="deleteMember('commander', index)">취소</button>
-                        </li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>말단</h4>
-                    <ul>
-                        <li v-for="(member, index) in memberList.endUser" :key="index" class="horizontalFlex">
-                            <span>{{member}}</span>
-                            <button class="del" @click="deleteMember('endUser', index)">취소</button>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </section>
+        <Member></Member>
         <section class="verticalFlex contentWrap">
             <div class="horizontalFlex">
                 <span>그룹</span><button @click="togglePop('group')">그룹 추가</button>
@@ -99,6 +39,8 @@
 
 <script>
 import Modal from './Modals.vue';
+import Union from './Union.vue';
+import Member from './Member.vue';
 import Group from './Group.vue';
 import ToDo from './ToDo.vue';
 import Loot from './Loot.vue';
@@ -107,6 +49,8 @@ import { useListStore } from "../stores/list";
 export default {
     components : {
         Modal
+        , Union
+        , Member
         , Group
         , ToDo
         , Loot
@@ -119,11 +63,6 @@ export default {
         const union = reactive({
             name: "",
             address: ""
-        });
-
-        const member = reactive({
-            name:""
-            , level:""
         });
 
         const group = reactive({
@@ -144,14 +83,6 @@ export default {
             , group:[]
         });
 
-        const createMember = () => {
-            unions.createMember(member.level, member.name);
-        }
-
-        const deleteMember = (level, index) => {
-            unions.deleteMember(level, index);
-        }
-
         const togglePop = (type, target = [], index, mode=0) => {
             unions.setGroup(group);
             unions.setToDo(toDo);
@@ -166,16 +97,12 @@ export default {
 
         return {
             union
-            , member
             , group
             , toDo
             , loot
             , unions
-            , createMember
-            , deleteMember
             , togglePop
             , saveData
-            , memberList: computed(()=> unions.memberList)
         }
     }
 }
@@ -233,7 +160,7 @@ export default {
     }
 
     .wrap {
-        width: 1200px;
+        max-width: 1200px;
         margin: 0 auto;
     }
 

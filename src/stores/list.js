@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { computed, onMounted, reactive,ref } from "vue";
+import { reactive,ref } from "vue";
 
 export const useListStore = defineStore("union", () => {
     let unions = reactive([]);
@@ -33,29 +33,21 @@ export const useListStore = defineStore("union", () => {
         , group: []
     })
 
-    const groupList = reactive(
-        []
-    );
-
-    const toDoList = reactive(
-        []
-    );
-
     const toDo = reactive({
         date:""
         , title:""
     });
     
-    const lootList = reactive(
-        []
-    );
-
     const loot = reactive({
         grade: -1
         , classroom: -1
         , loot:[]
         , group:[]
     });
+
+    const groupList = reactive([]);
+    const toDoList = reactive([]);
+    const lootList = reactive([]);
 
     const lootInfo = reactive({
         grade: [1,2,3,4,5,6]
@@ -265,15 +257,17 @@ export const useListStore = defineStore("union", () => {
             , "lootList": lootList
             , "lootInfo": lootInfo
         }
+
+        console.log(data);
         if(localStorage.getItem("unions"))
-            unions.unions = JSON.parse(localStorage.getItem("unions"));
-        unions.unions.push(data);
-        localStorage.setItem("unions", JSON.stringify(unions.unions));
+            unions = JSON.parse(localStorage.getItem("unions"));
+        unions.push(data);
+        localStorage.setItem("unions", JSON.stringify(unions));
     }
 
     const getData = () => {
         if(localStorage.getItem("unions"))
-            unions.unions = JSON.parse(localStorage.getItem("unions"));
+            unions = JSON.parse(localStorage.getItem("unions"));
         console.log(unions);
     }
 
