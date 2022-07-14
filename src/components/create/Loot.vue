@@ -10,10 +10,10 @@
                     <label for="">반</label>
                 </div>
                 <div class="buttonWrap">
-                    <button @click="togglePop('loot', loot, index, 0)">타겟 추가</button>
-                    <button @click="togglePop('subGroup', loot, index, 0)">그룹 추가</button>
-                    <button class="upd" @click="togglePop('loot', childList, index, 1)">수정</button>
-                    <button class="del" @click="togglePop('loot', childList, index, 2)">삭제</button>
+                    <button @click="unionStorage.togglePop('loot', loot, index, 'insert')">타겟 추가</button>
+                    <button @click="unionStorage.togglePop('subGroup', loot, index, 'insert')">그룹 추가</button>
+                    <button class="upd" @click="unionStorage.togglePop('loot', childList, index, 'update')">수정</button>
+                    <button class="del" @click="unionStorage.togglePop('loot', childList, index, 'delete')">삭제</button>
                 </div>
             </div>
             <div class="verticalFlex">
@@ -37,22 +37,22 @@
 
 <script>
 
-import { useListStore } from "@/stores/list";
+import { useListStore } from "@/stores/union";
 import Group from './Group.vue';
-export default {
-    name: "Loot",
-    components : {
+export default 
+{
+    name: "Loot"
+    , components : 
+    {
         Group
-    },
-    props: ["lootList","childList"],
-    setup() {
-        const unions = useListStore();
-        const togglePop = (type, target = [], index, mode=0) => {   
-            unions.togglePop(type, target, index, mode);
-        }
+    }
+    , props: ["lootList", "childList"]
+    , setup() 
+    {
+        const unionStorage = useListStore();
+
         return {
-            unions
-            , togglePop
+            unionStorage
         }
     }
 }
@@ -63,6 +63,7 @@ export default {
     {
         justify-content: space-between;
     }    
+    
     .lootForm > input
     {
         width: 50px;

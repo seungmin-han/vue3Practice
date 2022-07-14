@@ -1,7 +1,6 @@
+<!-- 연합 생성 페이지 컴포넌트 -->
 <template>
-    <!-- 연합 생성 페이지 컴포넌트 -->
-
-    <!-- 모달 팝업(연합 생성에서 emit을 통한 로직 처리) -->
+    <!-- 모달 팝업 -->
     <Modal></Modal>
 
     <div class="wrap">
@@ -9,30 +8,34 @@
         <Union></Union>
         <!-- 연합 멤버 입력 폼 -->
         <Member></Member>
+        <!-- 콘텐츠 -->
         <section class="verticalFlex contentWrap">
+            <!-- 연합의 그룹 -->
             <div class="horizontalFlex">
-                <span>그룹</span><button @click="togglePop('group')">그룹 추가</button>
+                <span>그룹</span><button @click="unionStorage.togglePop('group')">그룹 추가</button>
             </div>
             <Group 
-                :groupList="unions.groupList"
-                :childList="unions.groupList">
+                :groupList="unionStorage.groupList"
+                :childList="unionStorage.groupList">
             </Group>
+            <!-- 연합의 일정 -->
             <div class="horizontalFlex">
-                <span>일정</span><button @click="togglePop('toDo')">일정 추가</button>
+                <span>일정</span><button @click="unionStorage.togglePop('toDo')">일정 추가</button>
             </div>
             <ToDo 
-                :target="unions.toDoList">
+                :target="unionStorage.toDoList">
             </ToDo>
+            <!-- 연합의 목표 -->
             <div class="horizontalFlex">
-                <span>약탈</span><button @click="togglePop('loot')">약탈 추가</button>
+                <span>약탈</span><button @click="unionStorage.togglePop('loot')">약탈 추가</button>
             </div>
             <Loot
-                :lootList="unions.lootList"
-                :childList="unions.lootList">
+                :lootList="unionStorage.lootList"
+                :childList="unionStorage.lootList">
             </Loot>
         </section>
         <div class="horizontalFlex">
-            <button @click="saveData">생성하기</button>
+            <button @click="unionStorage.saveData">생성하기</button>
         </div>
     </div>
 </template>
@@ -44,84 +47,46 @@ import Member from './Member.vue';
 import Group from './Group.vue';
 import ToDo from './ToDo.vue';
 import Loot from './Loot.vue';
-import { computed, reactive, ref } from "vue";
-import { useListStore } from "../stores/list";
-export default {
-    components : {
+import { useListStore } from "@/stores/union";
+export default 
+{
+    components : 
+    {
         Modal
         , Union
         , Member
         , Group
         , ToDo
         , Loot
-    },
-
-    setup() {
-
-        const unions = useListStore();
-
-        const union = reactive({
-            name: "",
-            address: ""
-        });
-
-        const group = reactive({
-            name:""
-            , toDo: []
-            , group: []
-        });
-
-        const toDo = reactive({
-            date:""
-            , title:""
-        });
-
-        const loot = reactive({
-            grade: -1
-            , classroom: -1
-            , loot:[]
-            , group:[]
-        });
-
-        const togglePop = (type, target = [], index, mode=0) => {
-            unions.setGroup(group);
-            unions.setToDo(toDo);
-            unions.setLoot(loot);
-
-            unions.togglePop(type, target, index, mode);
-        }
-
-        const saveData = () => {
-            unions.saveData();
-        }
-
+    }
+    , setup() 
+    {
+        const unionStorage = useListStore();
+        
         return {
-            union
-            , group
-            , toDo
-            , loot
-            , unions
-            , togglePop
-            , saveData
+            unionStorage
         }
     }
 }
 </script>
 
 <style lang="scss">
-    @mixin memberItem {
+    @mixin memberItem 
+    {
         padding: 5px 0;
         border-bottom: 2px solid #ccc;
     }
 
     /* 공통 스타일 시작 */
 
-    input, select {
+    input, select 
+    {
         font-size: 18px;
         line-height: 18px;
     }
 
-    button {
+    button 
+    {
         margin: 0 5px;
         padding: 5px 15px;
         color: #fff;
@@ -132,39 +97,48 @@ export default {
         border-radius: 5px;
     }
 
-    .del {
+    .del 
+    {
         background-color: brown;
     }
 
-    .upd {
+    .upd 
+    {
         background-color:mediumseagreen
     }
     
-    .gray{
+    .gray
+    {
         background-color: gray;
     }
 
-    .verticalFlex {
+    .verticalFlex 
+    {
         display:flex;
         flex-direction: column;
         justify-content: flex-start;
     };
 
-    .horizontalFlex {
+    .horizontalFlex 
+    {
         display:flex;
         flex-direction: row;
         justify-content: center;
-        > div {
+
+        > div 
+        {
             padding: 10px;
         }
     }
 
-    .wrap {
+    .wrap 
+    {
         max-width: 1200px;
         margin: 0 auto;
     }
 
-    section {
+    section 
+    {
         margin: 30px 0;
         padding: 40px 0;
         border: 1px solid #ccc;
@@ -174,8 +148,10 @@ export default {
 
     /* 연합 정보 영역 시작 */
 
-    .unionWrap {
-        > div {
+    .unionWrap 
+    {
+        > div 
+        {
             flex-grow: 1;
         }
     }
@@ -184,27 +160,40 @@ export default {
 
     /* 멤버 영역 시작 */
 
-    .memberWrap {
+    .memberWrap 
+    {
         max-height: 200px;
-        h4 {
+
+        h4 
+        {
             padding: 10px 0;
             border-bottom: 3px solid #666;
         }
-        > div:first-child > div {
+
+        > div:first-child > div 
+        {
             @include memberItem();
         }
-        > div {
+
+        > div 
+        {
             max-height: inherit;
             flex-grow: 1;
-            > ul {
+
+            > ul 
+            {
                 max-height: 100px;
                 overflow-y: scroll;
-                > li {
+
+                > li 
+                {
                     @include memberItem();
                 } 
             }
         }
-        .horizontalFlex {
+
+        .horizontalFlex 
+        {
             justify-content: space-between;
         }
     }
@@ -213,24 +202,34 @@ export default {
 
     /* 일정 영역 시작 */
 
-    .contentWrap {
+    .contentWrap 
+    {
         padding: 20px;
-        > div {
+
+        > div 
+        {
             justify-content: space-between;
             padding: 10px 0;
-            > span {
+
+            > span 
+            {
                 font-size: 24px;
                 font-weight: bold;
             }
         }
-        > div.horizontalFlex {
+
+        > div.horizontalFlex 
+        {
             border-bottom: 2px solid #aaa;
         }
-        .groupWrap > .groupWrap {
+
+        .groupWrap > .groupWrap 
+        {
             padding-left: 30px;
         }
 
-        .lootWrap > .lootWrap {
+        .lootWrap > .lootWrap 
+        {
             padding-left: 30px;
         }
 

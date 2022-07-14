@@ -7,7 +7,7 @@
             <input 
                 type="text" 
                 placeholder="연합 이름" 
-                v-model="unions.union.name"
+                v-model="unionStorage.union.name"
             >
             </div>
             <div>
@@ -15,7 +15,7 @@
                 <input 
                     type="text" 
                     placeholder="연합 주소" 
-                    v-model="unions.union.address"
+                    v-model="unionStorage.union.address"
                 >
             </div>
         </div>
@@ -23,13 +23,13 @@
 </template>
 
 <script>
-import { useListStore } from '@/stores/list'
+import { useListStore } from '@/stores/union'
 export default {
     name: "Union"
     , setup() {
-        const unions = useListStore();
+        const unionStorage = useListStore();
         return {
-            unions
+            unionStorage
         }
     }
 }

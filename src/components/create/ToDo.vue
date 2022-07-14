@@ -8,8 +8,8 @@
                 <input type="text" :value="toDo.title" disabled>
             </div>
             <div>
-                <button class="upd" @click="togglePop('toDo', target, index, 1)">수정</button>
-                <button class="del" @click="togglePop('toDo', target, index, 2)">삭제</button>
+                <button class="upd" @click="unionStorage.togglePop('toDo', target, index, 'update')">수정</button>
+                <button class="del" @click="unionStorage.togglePop('toDo', target, index, 'delete')">삭제</button>
             </div>
         </div>
     </div>
@@ -17,22 +17,21 @@
 </template>
 
 <script>
-import { useListStore } from "@/stores/list"
-import { reactive } from '@vue/reactivity'
+import { useListStore } from "@/stores/union"
 export default {
     name: "ToDo",
     props: ["target"],
     setup() {
 
-        const unions = useListStore();
-        const togglePop = (type, target = [], index, mode=0) => {
+        const unionStorage = useListStore();
+        // const togglePop = (type, target = [], index, mode) => {
             
-            unions.togglePop(type, target, index, mode);
-        }
+        //     unionStorage.togglePop(type, target, index, mode);
+        // }
 
         return {
-            unions
-            , togglePop
+            unionStorage
+            // , togglePop
         }
     }
 }

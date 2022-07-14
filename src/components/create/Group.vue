@@ -8,10 +8,10 @@
                     <input type="text" :value="group.name" disabled>
                 </div>
                 <div class="buttonWrap">
-                    <button @click="togglePop('subGroup', group, index, 0)">서브 그룹 추가</button>
-                    <button v-if="!isLoot" @click="togglePop('toDo',group, index, 0)">일정 추가</button>
-                    <button class="upd" @click="togglePop('group', childList, index, 1)">수정</button>
-                    <button class="del" @click="togglePop('group', childList, index, 2)">삭제</button>
+                    <button @click="unionStorage.togglePop('subGroup', group, index, 'insert')">서브 그룹 추가</button>
+                    <button v-if="!isLoot" @click="unionStorage.togglePop('toDo',group, index, 'insert')">일정 추가</button>
+                    <button class="upd" @click="unionStorage.togglePop('group', childList, index, 'update')">수정</button>
+                    <button class="del" @click="unionStorage.togglePop('group', childList, index, 'delete')">삭제</button>
                 </div>
             </div>
         <div class="verticalFlex">
@@ -33,24 +33,22 @@
 </template>
 
 <script>
-import { useListStore } from "@/stores/list";
+import { useListStore } from "@/stores/union";
 import ToDo from './ToDo.vue';
-export default {
-    name: "Group",
-    components : {
+export default 
+{
+    name: "Group"
+    , components : 
+    {
         ToDo
-    },
+    }
+    , props: ["groupList", "childList", "isLoot"]
+    , setup() 
+    {
+        const unionStorage = useListStore();
 
-    props: ["groupList","childList","isLoot"],
-    setup() {
-        const unions = useListStore();
-
-        const togglePop = (type, target = [], index, mode=0) => {   
-            unions.togglePop(type, target, index, mode);
-        }
         return {
-            unions
-            , togglePop
+            unionStorage
         }
     }
 }
