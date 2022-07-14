@@ -4,6 +4,7 @@
         <div v-for="(loot, index) in childList" :key="index" class="verticalFlex lootWrap">
             <div class="horizontalFlex">
                 <div class="lootForm">
+                    <div class="box"></div>
                     <input type="text" :value="loot.grade" maxlength="1" disabled>
                     <label for="">학년</label>
                     <input type="text" :value="loot.classroom" maxlength="1" disabled>
@@ -16,7 +17,7 @@
                     <button class="del" @click="unionStorage.togglePop('loot', childList, index, 'delete')">삭제</button>
                 </div>
             </div>
-            <div class="verticalFlex">
+            <div class="verticalFlex subWrap">
                 <!-- 타겟 하위 그룹 -->
                 <Group
                     :groupList="loot"
@@ -25,7 +26,6 @@
                 </Group>
                 <!-- 타겟 하위 타겟 -->
                 <Loot
-                    class="lootWrap"
                     :lootList="loot" 
                     :childList="loot.loot">
                 </Loot>
@@ -63,11 +63,25 @@ export default
     {
         justify-content: space-between;
     }    
-    
+
     .lootForm > input
     {
         width: 50px;
         text-align: right;
+    }
+
+    .subWrap .lootWrap{
+        margin-left:20px;
+        
+        > .horizontalFlex, .toDoWrap 
+        {
+            border-left: 2px solid #000;
+        }
+    } 
+
+    .lootWrap .lootWrap:not(:last-child) 
+    {
+        border-left:2px solid #000;
     }
 
     

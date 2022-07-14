@@ -1,7 +1,8 @@
 <template>
-    <div class="verticalFlex">
+    <div class="verticalFlex toDoWrap">
         <div v-for="(toDo, index) in target" :key="index" class="horizontalFlex">
             <div>
+                <div class="box"></div>
                 <label for="">일정 날짜</label>
                 <input type="date" :value="toDo.date" disabled>
                 <label for="">일정 제목</label>
@@ -18,27 +19,24 @@
 
 <script>
 import { useListStore } from "@/stores/union"
-export default {
-    name: "ToDo",
-    props: ["target"],
-    setup() {
-
+export default 
+{
+    name: "ToDo"
+    , props: ["target"]
+    , setup() 
+    {
         const unionStorage = useListStore();
-        // const togglePop = (type, target = [], index, mode) => {
-            
-        //     unionStorage.togglePop(type, target, index, mode);
-        // }
-
         return {
             unionStorage
-            // , togglePop
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-    .horizontalFlex {
+    .horizontalFlex 
+    {
         justify-content: space-between;
     }
+
 </style>

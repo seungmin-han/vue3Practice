@@ -15,6 +15,7 @@
                 <span>그룹</span><button @click="unionStorage.togglePop('group')">그룹 추가</button>
             </div>
             <Group 
+                class="sub"
                 :groupList="unionStorage.groupList"
                 :childList="unionStorage.groupList">
             </Group>
@@ -30,6 +31,7 @@
                 <span>약탈</span><button @click="unionStorage.togglePop('loot')">약탈 추가</button>
             </div>
             <Loot
+                class="lootWrap"
                 :lootList="unionStorage.lootList"
                 :childList="unionStorage.lootList">
             </Loot>
@@ -124,11 +126,6 @@ export default
         display:flex;
         flex-direction: row;
         justify-content: center;
-
-        > div 
-        {
-            padding: 10px;
-        }
     }
 
     .wrap 
@@ -200,7 +197,7 @@ export default
 
     /* 멤버 영역 끝 */
 
-    /* 일정 영역 시작 */
+    /* 그룹, 일정, 약탈 영역 시작 */
 
     .contentWrap 
     {
@@ -223,19 +220,16 @@ export default
             border-bottom: 2px solid #aaa;
         }
 
-        .groupWrap > .groupWrap 
-        {
-            padding-left: 30px;
-        }
-
-        .lootWrap > .lootWrap 
-        {
-            padding-left: 30px;
-        }
-
     }
 
     /* 일정 영역 끝 */
 
+    .box 
+    {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-bottom: 2px solid #000;
+    }
 
 </style>

@@ -31,9 +31,11 @@
 </template>
 
 <script>
-export default {
+export default 
+{
   name: 'Main',
-  props: {
+  props: 
+  {
     msg: String
   }
 }
@@ -41,18 +43,25 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
-h3 {
+h3 
+{
   margin: 40px 0 0;
 }
-ul {
+
+ul 
+{
   list-style-type: none;
   padding: 0;
 }
-li {
+
+li 
+{
   display: inline-block;
   margin: 0 10px;
 }
-a {
+
+a 
+{
   color: #42b983;
 }
 </style>

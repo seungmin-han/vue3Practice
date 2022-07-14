@@ -9,7 +9,8 @@
 </template>
 
 <style>
-#app {
+#app 
+{
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -18,7 +19,8 @@
   margin-top: 60px;
 }
 
-#nav > * {
+#nav > * 
+{
   margin: 0 20px;
 }
 </style>

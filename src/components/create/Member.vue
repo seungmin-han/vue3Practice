@@ -43,11 +43,12 @@
 
 <script>
 import { useListStore } from '@/stores/union'
-import { computed, reactive } from "vue";
+import { computed } from "vue";
 export default 
 {
     name: "Member"
-    , setup() {
+    , setup() 
+    {
         const unionStorage = useListStore();
 
         return {

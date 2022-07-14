@@ -61,7 +61,59 @@ export const useListStore = defineStore("unionStorage", () =>
                 , endUser: []
             }
         );
-        const groupList = reactive([]);
+        const groupList = reactive(
+            [
+                {
+                    name: "그룹A"
+                    , toDo: []
+                    , group: [
+                        {
+                            name: "그룹A_1"
+                            , toDo: []
+                            , group: [
+                                {
+                                    name: "그룹A_1_1"
+                                    , toDo: [
+                                        {
+                                            title: "일정A"
+                                            , date: ""
+                                        }
+                                    ]
+                                    , group: [
+                                        {
+                                            name: "그룹A_1_1_1"
+                                            , toDo: []
+                                            , group: [
+                                                {
+                                                    name: "그룹A_1_1_1_1"
+                                                    , toDo: [
+                                                        {
+                                                            title: "일정A_A"
+                                                            , date: ""
+                                                        }
+                                                    ]
+                                                    , group: []
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                        , {
+                            name: "그룹A_2"
+                            , toDo: []
+                            , group: []
+                        }
+                        , {
+                            name: "그룹A_3"
+                            , toDo: []
+                            , group: []
+                        }
+                    ]
+                }
+            ]
+        );
         const toDoList = reactive([]);
         const lootList = reactive([]);
 
@@ -159,7 +211,8 @@ export const useListStore = defineStore("unionStorage", () =>
             }
         }
 
-        const insertGroup = () => {
+        const insertGroup = () => 
+        {
             if(modals.target.length == 0)
             {
                 groupList.push({...group});

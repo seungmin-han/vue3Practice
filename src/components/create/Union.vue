@@ -24,9 +24,11 @@
 
 <script>
 import { useListStore } from '@/stores/union'
-export default {
+export default 
+{
     name: "Union"
-    , setup() {
+    , setup() 
+    {
         const unionStorage = useListStore();
         return {
             unionStorage

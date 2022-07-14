@@ -79,8 +79,10 @@
 </template>
 <script>
 import { useListStore } from "@/stores/union"
-export default {
-    setup() {
+export default 
+{
+    setup() 
+    {
         const unionStorage = useListStore();
 
         return {
