@@ -33,7 +33,7 @@
                 <ul>
                     <li v-for="(member, index) in memberList.endUser" :key="index" class="horizontalFlex">
                         <span>{{member}}</span>
-                        <button class="del" @click="deleteMember('endUser', index)">취소</button>
+                        <button class="del" @click="unionStorage.deleteMember('endUser', index)">취소</button>
                     </li>
                 </ul>
             </div>

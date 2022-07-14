@@ -84,7 +84,7 @@ export const useListStore = defineStore("unionStorage", () =>
                 return;
             }
 
-            
+
             if(member.level=="leader") 
             {
                 if(memberList.leader.length < 1)    
@@ -99,6 +99,8 @@ export const useListStore = defineStore("unionStorage", () =>
             {
                 memberList.endUser.push(member.name);
             }
+
+            member.name = "";
         }
 
 

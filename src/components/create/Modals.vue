@@ -20,8 +20,6 @@
                 <button class="upd" v-else @click="unionStorage.updateGroup">수정</button>
                 <button class="gray" @click="unionStorage.togglePop('group', unionStorage.modals.target)">닫기</button>
             </div>
-            
-                      
         </div>        
 
         <!-- 일정 모달 -->
