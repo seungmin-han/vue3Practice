@@ -42,14 +42,14 @@
 </template>
 
 <script>
-import { useListStore } from '@/stores/union'
+import { useUnionStore } from '@/stores/union'
 import { computed } from "vue";
 export default 
 {
     name: "Member"
     , setup() 
     {
-        const unionStorage = useListStore();
+        const unionStorage = useUnionStore();
 
         return {
             unionStorage

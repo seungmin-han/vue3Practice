@@ -1,6 +1,6 @@
 <!-- 연합 생성 페이지 컴포넌트 -->
 <template>
-    <!-- 모달 팝업 -->
+    <!-- 모달 팝업(텔레포트 적용) -->
     <Modal></Modal>
 
     <div class="wrap">
@@ -14,27 +14,32 @@
             <div class="horizontalFlex">
                 <span>그룹</span><button @click="unionStorage.togglePop('group')">그룹 추가</button>
             </div>
-            <Group 
-                class="sub"
-                :groupList="unionStorage.groupList"
-                :childList="unionStorage.groupList">
-            </Group>
+            <section class="groupSection contentSection">
+                <Group 
+                    :groupList="unionStorage.groupList"
+                    :childList="unionStorage.groupList">
+                </Group>
+            </section>
+            
             <!-- 연합의 일정 -->
             <div class="horizontalFlex">
                 <span>일정</span><button @click="unionStorage.togglePop('toDo')">일정 추가</button>
             </div>
-            <ToDo 
-                :target="unionStorage.toDoList">
-            </ToDo>
+            <section class="toDoSection contentSection">
+                <ToDo 
+                    :target="unionStorage.toDoList">
+                </ToDo>
+            </section>
             <!-- 연합의 목표 -->
             <div class="horizontalFlex">
                 <span>약탈</span><button @click="unionStorage.togglePop('loot')">약탈 추가</button>
             </div>
-            <Loot
-                class="lootWrap"
-                :lootList="unionStorage.lootList"
-                :childList="unionStorage.lootList">
-            </Loot>
+            <section class="lootSection contentSection">
+                <Loot
+                    :lootList="unionStorage.lootList"
+                    :childList="unionStorage.lootList">
+                </Loot>
+            </section>
         </section>
         <div class="horizontalFlex">
             <button @click="unionStorage.saveData">생성하기</button>
@@ -49,7 +54,7 @@ import Member from './Member.vue';
 import Group from './Group.vue';
 import ToDo from './ToDo.vue';
 import Loot from './Loot.vue';
-import { useListStore } from "@/stores/union";
+import { useUnionStore } from "@/stores/union";
 export default 
 {
     components : 
@@ -63,7 +68,7 @@ export default
     }
     , setup() 
     {
-        const unionStorage = useListStore();
+        const unionStorage = useUnionStore();
         
         return {
             unionStorage
@@ -232,4 +237,18 @@ export default
         border-bottom: 2px solid #000;
     }
 
+    .contentSection 
+    {
+        padding: 20px 0;
+        
+        > div 
+        {
+            margin-bottom:25px;
+            > div > div:first-child > .box 
+            {
+                width: 10px;
+                border: none;    
+            }
+        }
+    }
 </style>

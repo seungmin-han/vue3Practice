@@ -1,5 +1,6 @@
 <template>
-  <div v-show="unionStorage.modals.isOpen" class="modal">
+    <teleport to="#teleportArea">
+    <div v-show="unionStorage.modals.isOpen" class="modal">
         <!-- 그룹 모달 -->
 
         <div v-show="unionStorage.modals.type=='group' || unionStorage.modals.type=='subGroup'" class="modal_content">
@@ -76,14 +77,15 @@
             </div>
         </div>
     </div>
+    </teleport>
 </template>
 <script>
-import { useListStore } from "@/stores/union"
+import { useUnionStore } from "@/stores/union"
 export default 
 {
     setup() 
     {
-        const unionStorage = useListStore();
+        const unionStorage = useUnionStore();
 
         return {
             unionStorage

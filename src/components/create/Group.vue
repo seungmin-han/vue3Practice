@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { useListStore } from "@/stores/union";
+import { useUnionStore } from "@/stores/union";
 import ToDo from './ToDo.vue';
 export default 
 {
@@ -45,7 +45,7 @@ export default
     , props: ["groupList", "childList", "isLoot"]
     , setup() 
     {
-        const unionStorage = useListStore();
+        const unionStorage = useUnionStore();
 
         return {
             unionStorage
@@ -60,7 +60,8 @@ export default
         justify-content: space-between;
     }    
 
-    .subWrap .groupWrap{
+    .subWrap .groupWrap
+    {
         margin-left:20px;
         
         > .horizontalFlex, .toDoWrap 
@@ -70,9 +71,17 @@ export default
     } 
 
     .groupWrap .groupWrap:not(:last-child) 
+    , .lootWrap .groupWrap:not(:last-child)
     {
         border-left:2px solid #000;
+        > .subWrap > .toDoWrap {
+            border: none;
+        }
+
+        > .horizontalFlex 
+        {
+            border-left: none;
+        }
     }
-    
     
 </style>

@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { reactive } from "vue";
 
-export const useListStore = defineStore("unionStorage", () => 
+export const useUnionStore = defineStore("unionStorage", () => 
     {
         let unionList = reactive([]);
 
@@ -68,28 +68,28 @@ export const useListStore = defineStore("unionStorage", () =>
                     , toDo: []
                     , group: [
                         {
-                            name: "그룹A_1"
+                            name: "그룹A_A"
                             , toDo: []
                             , group: [
                                 {
-                                    name: "그룹A_1_1"
+                                    name: "그룹A_A_A"
                                     , toDo: [
                                         {
-                                            title: "일정A"
-                                            , date: ""
+                                            title: "일정A_A_A_1"
+                                            , date: "2022-07-13"
                                         }
                                     ]
                                     , group: [
                                         {
-                                            name: "그룹A_1_1_1"
+                                            name: "그룹A_A_A_A"
                                             , toDo: []
                                             , group: [
                                                 {
-                                                    name: "그룹A_1_1_1_1"
+                                                    name: "그룹A_A_A_A_A"
                                                     , toDo: [
                                                         {
-                                                            title: "일정A_A"
-                                                            , date: ""
+                                                            title: "일정A_A_A_A_A_1"
+                                                            , date: "2022-07-13"
                                                         }
                                                     ]
                                                     , group: []
@@ -114,7 +114,18 @@ export const useListStore = defineStore("unionStorage", () =>
                 }
             ]
         );
-        const toDoList = reactive([]);
+        const toDoList = reactive(
+            [
+                {
+                    title: "일정A"
+                    , date: "2022-07-14"
+                }
+                , {
+                    title: "일정B"
+                    , date: "2022-07-14"
+                }
+            ]
+        );
         const lootList = reactive([]);
 
         const lootInfo = reactive(
@@ -124,7 +135,7 @@ export const useListStore = defineStore("unionStorage", () =>
             }
         );
 
-        const insertMember = () => 
+        function insertMember() 
         {
             if(member.level=="") {
                 alert("계급을 선택해주세요.");
@@ -156,7 +167,7 @@ export const useListStore = defineStore("unionStorage", () =>
         }
 
 
-        const deleteMember = (level, index) => 
+        function deleteMember(level, index) 
         {
             if(level=="leader") 
             {
@@ -173,7 +184,7 @@ export const useListStore = defineStore("unionStorage", () =>
 
         }
 
-        const togglePop = (type, target = [], index, mode="insert") => 
+        function togglePop(type, target = [], index, mode="insert") 
         {    
             modals.isOpen = !modals.isOpen;
             modals.target = target;
@@ -211,7 +222,7 @@ export const useListStore = defineStore("unionStorage", () =>
             }
         }
 
-        const insertGroup = () => 
+        function insertGroup() 
         {
             if(modals.target.length == 0)
             {
@@ -229,7 +240,7 @@ export const useListStore = defineStore("unionStorage", () =>
             togglePop("group");
         }
 
-        const updateGroup = () => 
+        function updateGroup()
         {
             modals.target[modals.index].name=group.name;
 
@@ -240,13 +251,13 @@ export const useListStore = defineStore("unionStorage", () =>
             togglePop("group");
         }
 
-        const deleteGroup = () => 
+        function deleteGroup()
         {
             modals.target.splice(modals.index, 1);
             togglePop("group");
         }
 
-        const insertToDo = () => 
+        function insertToDo() 
         {
             if(modals.target.length == 0) 
             {
@@ -262,7 +273,7 @@ export const useListStore = defineStore("unionStorage", () =>
             togglePop('toDo');
         }
 
-        const updateToDo = () => 
+        function updateToDo()
         {
             modals.target[modals.index].date=toDo.date;
             modals.target[modals.index].title=toDo.title;
@@ -273,13 +284,13 @@ export const useListStore = defineStore("unionStorage", () =>
             togglePop('toDo');
         }
 
-        const deleteToDo = () => 
+        function deleteToDo()
         {
             modals.target.splice(modals.index, 1);
             togglePop('toDo');
         }
 
-        const insertLoot = () => 
+        function insertLoot()
         {
             if(parseInt(loot.grade) == -1 || parseInt(loot.classroom) == -1) 
             {
@@ -303,7 +314,7 @@ export const useListStore = defineStore("unionStorage", () =>
             togglePop("loot");
         }
 
-        const updateLoot = () => 
+        function updateLoot()
         {
             modals.target[modals.index].grade=loot.grade;
             modals.target[modals.index].classroom=loot.classroom;
@@ -315,7 +326,7 @@ export const useListStore = defineStore("unionStorage", () =>
             togglePop('loot');
         }
 
-        const deleteLoot = () => 
+        function deleteLoot()
         {
             modals.target.splice(modals.index, 1);
 
@@ -324,20 +335,20 @@ export const useListStore = defineStore("unionStorage", () =>
             togglePop('loot');
         }
 
-        const setGroup = (grp) => 
+        function setGroup(grp)
         {
             group.name = grp.name;
             group.toDo = grp.toDo;
             group.group = grp.group;
         }
 
-        const setToDo = (td) => 
+        function setToDo(td)
         {
             toDo.date = td.date;
             toDo.title = td.title;
         }
 
-        const setLoot = (lt) => 
+        function setLoot(lt)
         {
             loot.grade= lt.grade;
             loot.classroom= lt.classroom;
@@ -345,7 +356,7 @@ export const useListStore = defineStore("unionStorage", () =>
             loot.group= lt.group;
         }
 
-        const saveData = () => 
+        function saveData()
         {
             const data = 
             {
@@ -362,7 +373,7 @@ export const useListStore = defineStore("unionStorage", () =>
             localStorage.setItem("unionList", JSON.stringify(unionList));
         }
 
-        const getSessionStorageData = () => 
+        function getSessionStorageData()
         {
             let returnData = [];
             if(localStorage.getItem("unionList"))

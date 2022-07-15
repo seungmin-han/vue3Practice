@@ -23,13 +23,13 @@
 </template>
 
 <script>
-import { useListStore } from '@/stores/union'
+import { useUnionStore } from '@/stores/union'
 export default 
 {
     name: "Union"
     , setup() 
     {
-        const unionStorage = useListStore();
+        const unionStorage = useUnionStore();
         return {
             unionStorage
         }
