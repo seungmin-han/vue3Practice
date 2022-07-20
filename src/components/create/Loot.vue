@@ -32,7 +32,7 @@
                             'subGroup',
                             loot,
                             index,
-                            'insert'
+                            'insert',
                         )
                     "
                 >
@@ -45,7 +45,7 @@
                             'loot',
                             childList,
                             index,
-                            'update'
+                            'update',
                         )
                     "
                 >
@@ -58,7 +58,7 @@
                             'loot',
                             childList,
                             index,
-                            'delete'
+                            'delete',
                         )
                     "
                 >
